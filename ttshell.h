@@ -42,7 +42,7 @@
 #if defined(USEDX8)
 #pragma comment(lib, "d3d8.lib")
 #else
-#pragma comment(lib, "d3dim.lib")
+// ### not needed #pragma comment(lib, "d3dim.lib")
 #endif
 #pragma comment(lib, "dxguid.lib")
 #pragma comment(lib, "dsound.lib")

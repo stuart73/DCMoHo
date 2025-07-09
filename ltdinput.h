@@ -14,7 +14,6 @@
 #define DIRECTINPUT_VERSION 0x0700
 
 #include <dinput.h>
-#pragma comment(lib, "dinput.lib")
 //======================================================-==--=-- --  -
 #define	LTDI_JOYSTICK	(1<<0)
 //======================================================-==--=-- --  -

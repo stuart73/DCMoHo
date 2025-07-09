@@ -17,6 +17,7 @@ BOOL	IsSampleLooping(SINT n)
 	case SOUND_CROWD6:	
 	case SOUND_CROWD7:
 	case SOUND_BUZZ:
+	case SOUND_MUSIC:
 		
 		return TRUE;
 

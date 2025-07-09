@@ -94,6 +94,7 @@ protected:
 		CTexture::mTextureCount++;
 		mVerts = NULL;
 		mTris = NULL;
+		mAlphaType = 0;
 
 		mNumVerts = 0;
 		mNumTris = 0;
@@ -101,6 +102,16 @@ protected:
 		mTriBuffSize = 0;
 		mNextTexture = NULL;
 		mName[0] = 0;
+		texw = 0;
+		texh = 0;
+		mNumAnimationFrames = 0;
+		mCurrentFrame = 0.0f;
+
+		// ### Was causing crashing in release builds if the Init() function failed (initial values not set)
+		for (int i = 0; i < MAX_ANIM_FRAMES; i++)
+		{ 
+			mTexSurface[i] = NULL;
+		}
 	};
 
 	virtual	~CTexture() = 0;

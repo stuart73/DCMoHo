@@ -69,14 +69,21 @@ HRESULT LTDInput::Init(HINSTANCE hInstance, HWND hDlg )
 		
 		// Set the cooperativity level to let DirectInput know how
 		// this device should interact with the system and with other
-		// DirectInput applications.
-		hr = mpMouse->SetCooperativeLevel(	hDlg,	
-#ifdef _DEBUG
-												DISCL_NONEXCLUSIVE
-#else
-												DISCL_EXCLUSIVE
-#endif
-											|	DISCL_FOREGROUND);
+		// DirectInput applications. ### now depends if window mode or not
+
+		DWORD level = 0;
+		if (Windowed == true)
+		{
+			level = DISCL_NONEXCLUSIVE;
+		}
+		else
+		{
+			level = DISCL_EXCLUSIVE;
+		}
+		level |= DISCL_FOREGROUND;
+
+		hr = mpMouse->SetCooperativeLevel(hDlg, level);
+
 		if (FAILED(hr))
 		{
 			PrintDXError(ret = hr);

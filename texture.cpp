@@ -302,9 +302,13 @@ void	CTexture::Shutdown()
 	
 	for (c0 = 0; c0 < mNumAnimationFrames; c0++)
 	{
-		mTexSurface[c0]->Destroy();
-		delete mTexSurface[c0];
-		mTexSurface[c0] = NULL;
+		// ### checks for null
+		if (mTexSurface[c0] != NULL)
+		{
+			mTexSurface[c0]->Destroy();
+			delete mTexSurface[c0];
+			mTexSurface[c0] = NULL;
+		}
 	}
 }
 

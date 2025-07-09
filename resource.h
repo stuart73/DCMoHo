@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by Configpanel.rc
+// Microsoft Visual C++ generated include file.
+// Used by configpanel.rc
 //
 #define IDD_CONFIGURATION               101
 #define IDD_MAP_KEYBOARD                101
@@ -127,6 +127,8 @@
 #define IDC_MAP_KEYBOARD_MAPPING1       1084
 #define IDC_MAP_JOYSTICK_MAPPING3       1085
 #define IDC_MAP_KEYBOARD_MAPPING2       1085
+#define IDC_CHECK1                      1085
+#define IDC_WINDOWED                    1085
 #define IDC_MAP_JOYSTICK_MAPPING4       1086
 #define IDC_MAP_KEYBOARD_MAPPING3       1086
 #define IDC_MAP_JOYSTICK_MAPPING5       1087
@@ -148,9 +150,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        106
+#define _APS_NEXT_RESOURCE_VALUE        107
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1085
+#define _APS_NEXT_CONTROL_VALUE         1086
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

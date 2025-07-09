@@ -3557,7 +3557,7 @@ void	CPaneThingEd::Init()
 		id ++;
 	}
 
-	mPaneThingDetail = new CPaneThingDetail(170, 700, 465, 5, EPS_RIGHT, SRCCOPY, FALSE, 395);
+	mPaneThingDetail = new CPaneThingDetail(170, 700, PLATFORM.ScreenWidth() - 10 - 170, 5, EPS_RIGHT, SRCCOPY, FALSE, 395);
 	mPaneThingDetail->Init();
 	DeActivateThingWindow();
 	mPaneThingDetail->mParent = this;
@@ -4375,11 +4375,11 @@ BOOL	CLevelEditor2::Init()
 	mSystemIcons->GetIcon(0, mPaneMouse->GetAddr(0, 0), size);
 	mPaneMouse->Activate();
 
-	mPaneTip = new CPaneTip(630, 30, 5, 446, EPS_BOTTOM);
+	mPaneTip = new CPaneTip(630, 30, 5, PLATFORM.ScreenHeight()-15- 30, EPS_BOTTOM);
 	mPaneTip->Init();
 	mPaneTip->Activate();
 
-	mPaneDisk = new CPaneDisk(340, 42, 5, 402, EPS_RIGHT);
+	mPaneDisk = new CPaneDisk(340, 42, 5, PLATFORM.ScreenHeight() - 15 - 42 - 30, EPS_RIGHT);
 	mPaneDisk->Init();
 	mPaneDisk->Activate();
 
@@ -4524,7 +4524,7 @@ void	CLevelEditor2::SetTipText(char *t)
 void	CLevelEditor2::Activate()
 {
 #if TARGET != DC
-	CONTROLS.Process(); //! hmm..  run once so editor doesn't quit straight away!
+	// ### CONTROLS.Process(); //! hmm..  run once so editor doesn't quit straight away!
 
 	mActive = TRUE;
 	ClearSelections();
@@ -4577,7 +4577,7 @@ void	CLevelEditor2::EnableDialogBox(char *text, EEdDialogType type, CPane *calle
 	ASSERT(!mDialogActive); //!hmmmm.
 
 	// create dialog pane
-	mDialogPane = new CPaneDialog(286, 42, 350, 402, EPS_RIGHT);
+	mDialogPane = new CPaneDialog(286, 42, PLATFORM.ScreenWidth()-15-286, 402, EPS_RIGHT);
 	mDialogPane->Init();
 	mDialogPane->InitDialog(type, caller, text);
 	mDialogPane->Activate();

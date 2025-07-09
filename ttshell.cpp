@@ -69,7 +69,7 @@
 #include	"PCSetupQuery.h"
 
 
-#define SCREEN_BITS 16
+#define SCREEN_BITS 32  // ### has to be 32 bits from now on, previous set to 16
 #define	WIN_CLASS_NAME	"ENGINEWND"
 
 
@@ -840,15 +840,18 @@ BOOL	TTApp::Init(HINSTANCE hInstance, LPSTR cmd_line)
 			if (!m_pDpWin)
 			return FALSE;
 
-#ifdef _DEBUG
-	result = m_pDpWin->Init(this, m_hInstance, 640, 480, FALSE);
-	mFullScreen = FALSE;
-#else
-	result = m_pDpWin->Init(this, m_hInstance, 640, 480, TRUE);
+
+//###	result = m_pDpWin->Init(this, m_hInstance, 640, 480, FALSE);
+// ###	mFullScreen = FALSE;
+result = m_pDpWin->Init(this, m_hInstance, PLATFORM.ScreenWidth(), PLATFORM.ScreenHeight(), !Windowed);
+mFullScreen = !Windowed;
+
+
+//	result = m_pDpWin->Init(this, m_hInstance, PLATFORM.ScreenWidth(), PLATFORM.ScreenHeight(), TRUE);
 //	result = m_pDpWin->Init(this, m_hInstance, 320, 200, TRUE);
 //	result = m_pDpWin->Init(this, m_hInstance, 640, 400, TRUE);
-	mFullScreen = TRUE;
-#endif
+//	mFullScreen = TRUE;
+
 
 		}
 

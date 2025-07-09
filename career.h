@@ -57,7 +57,7 @@ public:
 		mSoundVolume = 8;
 		mMusicVolume = 8;
 		mControlSet = 0;
-		mStereo = FALSE;
+		mStereo = TRUE;
 		mForceFeedback = TRUE;
 		mControls1 = 0;
 		mControls2 = 0;

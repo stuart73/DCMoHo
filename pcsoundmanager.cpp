@@ -60,6 +60,7 @@ BOOL	CPCSoundManager::Init(HWND handleToWindow) {
 
 	LPDIRECTSOUNDBUFFER pDSBPrimary = NULL;
 	LPDIRECTSOUNDBUFFER ptemp_DSB_Secondary = NULL;
+
 	IsCDPlaying = FALSE;
 	
 	if (mySystem)
@@ -112,7 +113,8 @@ BOOL	CPCSoundManager::Init(HWND handleToWindow) {
 		mSoundEvent[i].mSubVolume = 0;			// The Sub Volume
 		mSoundEvent[i].mFade= G0;				// The panning of the sound across the speakers
 		mSoundEvent[i].mFadeDest = G0;			// Which way the panning is moving.
-		mSoundEvent[i].mTime = G0; 		
+		mSoundEvent[i].mTime = G0; 	
+		mSoundEvent[i].mMusic = FALSE;
 	}
 
     // Create IDirectSound using the primary sound device
@@ -142,10 +144,11 @@ BOOL	CPCSoundManager::Init(HWND handleToWindow) {
 		return FALSE;
 	}
 
-    // Set primary buffer format to 22kHz and 16-bit output.
+    // Set primary buffer format to 44.1kHz and 16-bit output.
     WAVEFORMATEX wfx;
     ZeroMemory( &wfx, sizeof(WAVEFORMATEX) ); 
     wfx.wFormatTag      = WAVE_FORMAT_PCM; 
+
     if(CAREER.mStereo == TRUE)
 	{
 		wfx.nChannels       = 2;
@@ -154,7 +157,9 @@ BOOL	CPCSoundManager::Init(HWND handleToWindow) {
 	{
 		wfx.nChannels       = 1;
 	}
-    wfx.nSamplesPerSec  = 22050; 
+	wfx.nChannels = 2;
+
+    wfx.nSamplesPerSec  = 44100; 
     wfx.wBitsPerSample  = 16; 
     wfx.nBlockAlign     = wfx.wBitsPerSample / 8 * wfx.nChannels;
     wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
@@ -214,51 +219,53 @@ void	CPCSoundManager::AllocSampleBank(char *name)	{
 
 	if(WavPointers[0].pbWavData == NULL)
 	{
-		
-		for(int i = 0; i <64; i++)
+		for(int i = 0; i <63; i++)
 		{
 			sprintf(strFileName, "data\\sounds\\%d.wav", i);
-					
-//			g_pWaveSoundRead = new CWaveSoundRead();
 
 			// Load the wave file
-			if (!(g_pWaveSoundRead.Open( strFileName )))
-			{
-				// Reset the wave file to the beginning 
-				g_pWaveSoundRead.Reset();
-		
-				// The size of wave data is in pWaveFileSound->m_ckIn
-				INT nWaveFileSize = g_pWaveSoundRead.m_ckIn.cksize;
-	
-				// Allocate that buffer.
-				WavPointers[i].pbWavData = new BYTE[ nWaveFileSize ];
-		
-				if(FAILED(g_pWaveSoundRead.Read(	nWaveFileSize, 
-													WavPointers[i].pbWavData, 
-													&WavPointers[i].cbWavSize))) 
-				{
-					WavPointers[i].pbWavData	= NULL;
-					WavPointers[i].cbWavSize	= 0;
-				}
-				WavPointers[i].cbWavSize = nWaveFileSize;
-			
-			g_pWaveSoundRead.Close();
-
-			}
+			LoadSoundWav((char*)strFileName, &WavPointers[i]);			
 		}
 	}
 		
 }; //Setup the sound sample bank
 
-/********************************************************/
+BOOL CPCSoundManager::LoadSoundWav(char* strFileName, filePointer* loadInto)
+{
+	if (!(g_pWaveSoundRead.Open(strFileName)))
+	{
+		// Reset the wave file to the beginning 
+		g_pWaveSoundRead.Reset();
 
+		// The size of wave data is in pWaveFileSound->m_ckIn
+		INT nWaveFileSize = g_pWaveSoundRead.m_ckIn.cksize;
+
+		// Allocate that buffer.
+		loadInto->pbWavData = new BYTE[nWaveFileSize];
+
+		if (FAILED(g_pWaveSoundRead.Read(nWaveFileSize,
+			loadInto->pbWavData,
+			&loadInto->cbWavSize)))
+		{
+			loadInto->pbWavData = NULL;
+			loadInto->cbWavSize = 0;
+		}
+		loadInto->cbWavSize = nWaveFileSize;
+
+		g_pWaveSoundRead.Close();
+		return TRUE;
+	}
+	return FALSE;
+}
+
+/********************************************************/
 void	CPCSoundManager::Reset() {
 
 	for(int i=0;i<SizeOfBuffers;i++)
 	{
 		mSoundEvent[i].mChannel = i;
 		mSoundEvent[i].mOwner = NULL;
-		if (DSBuffer[i])
+		if (DSBuffer[i] && mSoundEvent[i].mMusic == FALSE)	// music is stopped manually, as may persist between resets
 		{
 			DSBuffer[i]->Stop();
 		}
@@ -266,12 +273,29 @@ void	CPCSoundManager::Reset() {
 }; //do something entirely different?
 
 /********************************************************/
+SINT	CPCSoundManager::PlayMusicFromInstallFolder(char* strFileName, GINT volume)
+{
+	SAFE_DELETE(WavPointers[SOUND_MUSIC].pbWavData);
+	WavPointers[SOUND_MUSIC].pbWavData = NULL;
+	if (LoadSoundWav(strFileName, &WavPointers[SOUND_MUSIC]) == TRUE)
+	{
+		SINT ss = PlaySample(SOUND_MUSIC, volume, FALSE, G0, TRUE);
 
+		// don't need this anymore as data in direct sound buffer
+		SAFE_DELETE(WavPointers[SOUND_MUSIC].pbWavData);
+		WavPointers[SOUND_MUSIC].pbWavData = NULL;
+		return ss;
+	}
+	return -1;
+}
+
+/********************************************************/
 //function called to play a sample
 SINT	CPCSoundManager::PlaySample(const short id, 
 								   GINT volume, 
 								   BOOL once, 
-								   GINT fade) {
+								   GINT fade,
+								   BOOL music) {
 	HRESULT hr;
 	
 	//if ((mSoundState != 0))
@@ -303,6 +327,7 @@ SINT	CPCSoundManager::PlaySample(const short id,
 	event->mSample 	= id;
 	event->mTrack = FALSE;
 	event->mTime = 0;
+	event->mMusic = music;
 
 	if (fade == G0)
 	{
@@ -349,14 +374,20 @@ SINT	CPCSoundManager::PlaySample(const short id,
 		//if(stereo)
 		//{
 			pcmwf.wf.nChannels       = 1;
+			pcmwf.wf.nBlockAlign = 2;
 		//}
 		//else
 		//{	
 			//pcmwf.wf.nChannels       = 1;
 		//}
 		
+		// Music is stereo
+		if (id == SOUND_MUSIC)
+		{
+			pcmwf.wf.nChannels = 2;
+			pcmwf.wf.nBlockAlign = 4;
+		}
 		pcmwf.wf.nSamplesPerSec = 44100; 
-		pcmwf.wf.nBlockAlign = 2; 
 		pcmwf.wf.nAvgBytesPerSec = 
 			pcmwf.wf.nSamplesPerSec * pcmwf.wf.nBlockAlign; 
 		pcmwf.wBitsPerSample = 16; 
@@ -474,6 +505,7 @@ SINT	CPCSoundManager::PlaySample(const short id, CThing *thing, GINT volume, BOO
 		event->mTrack 	= track;
 		event->mMasterVolume  = volume;
 		event->mTime = 0;
+		event->mMusic = FALSE;
 
 		if (fade == G0)
 		{
@@ -686,8 +718,12 @@ void	CPCSoundManager::FadeAllSamples() {
 
 	for (c0 = 0; c0 < SizeOfBuffers; c0++)
 	{
-		mSoundEvent[c0].mFadeDest = G0;
-		mSoundEvent[c0].mFade = -G(0, 3000);
+		// ### for all except background music
+		if (mSoundEvent->mMusic == FALSE)
+		{
+			mSoundEvent[c0].mFadeDest = G0;
+			mSoundEvent[c0].mFade = -G(0, 3000);
+		}
 	}
 	//mSoundState = 1; // fading!
 };
@@ -837,7 +873,7 @@ void inline	CPCSoundManager::UpdateStatus() {
 						vol = Fade(vol, cnt);
 						if(DSBuffer[cnt] != NULL)
 						{
-							DSBuffer[cnt]->SetVolume(vol);
+ 							DSBuffer[cnt]->SetVolume(vol);
 						}
 					}
 				}
@@ -948,10 +984,18 @@ SSoundEvent* CPCSoundManager::GetSoundEvent()
 //**********************************************************************************************
 SINT	CPCSoundManager::Fade(SINT v, SINT n)
 {
+
+	SINT cc = CAREER.mSoundVolume;
+	
+	if (mSoundEvent[n].mMusic == TRUE)
+	{
+		cc = CAREER.mMusicVolume;
+	}
+
 	SINT tv = (G(v) *
 	        mSoundEvent[n].mMasterVolume *
 	        mSoundEvent[n].mSubVolume *
-	        (G(CAREER.mSoundVolume) / G(10))).Whole();
+	        (G(cc) / G(10))).Whole();
 
 	
 	tv = tv*100; //was 350...
@@ -1166,15 +1210,14 @@ void CPCSoundManager::DeInitCDAudio()
 void CPCSoundManager::PlayCDTrack( int track )
 {
 
+	if (track < 2)
+	{
+		track = track + 2;
+	}
+
 	if( CDInitialised )
 	{
-		if( ( track < 2 ) )
-		{
-			track = track + 2;
-			
-		}
-
-		if( track > CDNumTracks )
+		if (track > CDNumTracks)
 		{
 			track = 5;
 		}
@@ -1188,18 +1231,63 @@ void CPCSoundManager::PlayCDTrack( int track )
 		CDCurrentTrack	= track;
 		IsCDPlaying		= TRUE;
 	}
+	else
+	{
+		// ### no CD? try music from install location
+		char musicstring[256] = { 0 };
+		strcat(musicstring, "data\\Music\\");
 
+		if (track == 2)
+		{
+			strcat(musicstring, "01 Sticks And Stones.wav");
+		}
+		else if (track == 3)
+		{
+			strcat(musicstring, "02 Suffocate.wav");
+		}
+		else if (track == 4)
+		{
+			strcat(musicstring, "03 Visual Poetry.wav");
+		}
+		else if (track == 5)
+		{
+			strcat(musicstring, "04 Otherside.wav");
+		}
+		else
+		{
+			strcat(musicstring, "05 Borrowed Time.wav");
+		}
+
+		SOUND.PlayMusicFromInstallFolder(musicstring, GINT_HALF);
+
+	}
 }
 	
 //**********************************************************************************************
 void CPCSoundManager::StopCDTrack()
 {
-	if( CDInitialised )
+ 	if( CDInitialised )
 	{
 		mciSendCommand( CDDeviceID, MCI_STOP, 0, 0 );
 		
 		IsCDPlaying = FALSE;
 	}
+	else
+	{
+		// if not playing from CD, then stop the buffer and release it
+		int i;
+		for (i = 0; i < SizeOfBuffers; i++)
+		{
+			if (DSBuffer[i] != NULL && mSoundEvent[i].mMusic == TRUE)
+			{
+				DSBuffer[i]->Stop();
+				SAFE_RELEASE(DSBuffer[i]);
+				mSoundEvent[i].mStatus = SPU_OFF;
+				mSoundEvent[i].mOwner = NULL;
+			}	
+		}
+	}
+
 }
 	
 //**********************************************************************************************
@@ -1294,6 +1382,20 @@ void	CPCSoundManager::DeclareVolumeChange()
 
 	// sound
 	UpdateStatus();
+
+	// update music if playing from install folder instead of CD
+	for (SINT cnt = 0; cnt < SizeOfBuffers; cnt++)
+	{
+		SSoundEvent* se = &mSoundEvent[cnt];
+		if (se->mMusic == TRUE)
+		{
+			SINT	vol = Fade(127, se->mChannel);
+			if (DSBuffer[cnt] != NULL)
+			{
+				DSBuffer[cnt]->SetVolume(vol);
+			}
+		}
+	}
 
 	// stereo
 	

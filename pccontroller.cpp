@@ -9,6 +9,7 @@
 #include	"PCGamePanel.h"
 
 #include 	"DCCheats.h"
+#include	"editors.h"
 
 struct	SCheat
 {
@@ -443,7 +444,20 @@ void	CController::UpdateFromPlatform()
 
 	mMouseX = p.x;
 	mMouseY = p.y;
-#if 0
+
+	// ### Allow editor in windowed mode
+	if (Windowed == true)
+	{
+		if (PLATFORM.IsKeyDown(VK_F6))
+		{
+			SetButton(BUTTON_EDITOR);
+			return;
+		}
+	}
+
+	// ### These are all old debug/editor button checks.
+	// ignore unless we are in the editor
+	if (!(EDITOR.IsActive())) return;
 
 	// first, check controller change
 	// are: Note the additional check to make sure that 
@@ -571,6 +585,10 @@ void	CController::UpdateFromPlatform()
 	case CM_JOY_GOLF:
 	case CM_JOY_SHUTTLE:
 	case CM_JOY_RACER:
+	{
+
+	}break;
+		/* ###
 	case CM_JOY_DIRECT:
 		// nasty hard coded joystick stuff
 		switch(mJoyMode)
@@ -632,6 +650,8 @@ void	CController::UpdateFromPlatform()
 
 		}
 		break;
+		*/
+
 	};
 
 
@@ -767,8 +787,9 @@ void	CController::UpdateFromPlatform()
 	case CM_JOY_RACER:
 	case CM_JOY_DIRECT:
 
-		mAnalogue[ANALOGUE_LEFT_RIGHT] =  G(joy->lX) / 800;
-		mAnalogue[ANALOGUE_DOWN_UP]    = -G(joy->lY) / 800;
+		//### 
+	//	mAnalogue[ANALOGUE_LEFT_RIGHT] =  G(joy->lX) / 800;
+	//	mAnalogue[ANALOGUE_DOWN_UP]    = -G(joy->lY) / 800;
 
 		if (mAnalogue[ANALOGUE_LEFT_RIGHT] >  G1)  mAnalogue[ANALOGUE_LEFT_RIGHT] =  G1;
 		if (mAnalogue[ANALOGUE_LEFT_RIGHT] < -G1)  mAnalogue[ANALOGUE_LEFT_RIGHT] = -G1;
@@ -780,7 +801,6 @@ void	CController::UpdateFromPlatform()
 
 		break;
 	};
-#endif
 }
 
 // - are --------------------------------------------------------------

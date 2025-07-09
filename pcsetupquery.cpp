@@ -2,11 +2,15 @@
 
 #if TARGET == PC
 
+//### gets rid of cd checks
+#define IGNORE_INSTALL
+
 #include <windows.h>
 #include <windowsx.h>
 #include <ddraw.h>
 #include <dinput.h>
-#include <dmusici.h>
+// ###  #include <dmusici.h>
+
 
 #include <process.h>
 #include <direct.h>
@@ -47,10 +51,14 @@ CQueryPlatform*	mySystem;
 char			MoHoCDPath[MAX_PATH];
 char			WhereIsSetup[MAX_PATH];
 GUID			SelectedDisplayDevice;
-int				SelectedWidth, SelectedHeight, SelectedDepth;
+//### default values
+int				SelectedWidth = 1280;
+int				SelectedHeight = 1024;
+int				SelectedDepth = 32;
 GUID			SelectedSoundDevice;
 SINT			PCSetupQueryLanguage;
 bool			OkayToUseStdNavKeys;
+bool			Windowed = false;
 
 #define NUMBER_OF_ACTIONS	(20)
 struct	tagConfigKeyMapping ConfigKeyMapping[NUMBER_OF_ACTIONS]; // This must go!
@@ -321,6 +329,7 @@ VOID GetDXVersion( DWORD* pdwDXVersion, DWORD* pdwDXPlatform )
     ///////////////////////////////////////////////////////////////////////////
 
     // Check for DMusic, which was introduced with DX6.1
+	/* ### not needed
     LPDIRECTMUSIC pDMusic = NULL;
     CoInitialize( NULL );
     hr = CoCreateInstance( CLSID_DirectMusic, NULL, CLSCTX_INPROC_SERVER,
@@ -336,7 +345,8 @@ VOID GetDXVersion( DWORD* pdwDXVersion, DWORD* pdwDXPlatform )
     (*pdwDXVersion) = 0x601;
     pDMusic->Release();
     CoUninitialize();
-    
+    */
+
 
     ///////////////////////////////////////////////////////////////////////////
     // DirectX 7.0 Checks
@@ -518,7 +528,7 @@ int RunGameDialog(HINSTANCE hInstance)
 		Install = true;
 	}
 
-	CompleteInstall = !CorrectlyInstalled();
+	CompleteInstall = false; // ### it's installed whatever !CorrectlyInstalled();
 
 	// Check whether the wrong version of DX was installed when the program was install.
 	if (	!(PCLoadFromRegistry(	HKEY_CURRENT_USER,	// Existing key or default root.
@@ -922,6 +932,8 @@ LRESULT CALLBACK DeviceDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 	int							i;
 	CVideoDevice*				VideoDeviceRef, *SelectThisVideoDevice;
 	CSoundDevice*				SoundDeviceRef, *SelectThisSoundDevice;
+	BOOL isChecked = FALSE;
+	char checked = 0;
 	
 	// What are we processing?
 	switch (uMsg)
@@ -975,7 +987,7 @@ LRESULT CALLBACK DeviceDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			for (i = VideoDeviceRef->GetNumberOfResolutions(); i--;)
 			{
 				// Filter out un wanted resolutions here!
-				if	(	(VideoDeviceRef->GetResolution(i)->ddpfPixelFormat.dwRGBBitCount >= 16)
+				if	(	(VideoDeviceRef->GetResolution(i)->ddpfPixelFormat.dwRGBBitCount >= 32)  // ### 32 bit modes now
 					&&	(VideoDeviceRef->GetResolution(i)->dwWidth >= 640)
 					&&	(VideoDeviceRef->GetResolution(i)->dwHeight >= 480)
 					)
@@ -998,6 +1010,10 @@ LRESULT CALLBACK DeviceDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 			i = SendMessage(ComboBox, CB_FINDSTRINGEXACT, 0, (LPARAM)(LPCTSTR)buffer);
 			SendMessage(ComboBox, CB_SETCURSEL, i, 0);
 			
+			// ----
+			// WINDOWED
+			HWND checkbox = GetDlgItem(hDlg, IDC_WINDOWED);
+			CheckDlgButton(hDlg, IDC_WINDOWED, Windowed==1);
 	
 			// ----
 			// SOUND
@@ -1159,6 +1175,29 @@ LRESULT CALLBACK DeviceDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPara
 					REG_BINARY, 
 					buffer, 
 					sizeof(SelectedDisplayDevice));
+
+				// ----
+				// Windowed
+			    isChecked = IsDlgButtonChecked(hDlg, IDC_WINDOWED);
+				checked = 0;
+				if (isChecked == BST_CHECKED)
+				{
+					checked = 1;
+					Windowed = true;
+				}
+				else
+				{
+					checked = 0;
+					Windowed = false;
+				}
+	
+				PCSaveToRegistry(HKEY_CURRENT_USER,
+					MOHO_REGISTRY_PATH,
+					"Windowed",
+					REG_BINARY,
+					(char*)&checked,
+					sizeof(checked));
+				
 				
 				// ----
 				// SOUND
@@ -2346,9 +2385,21 @@ void	LoadSettings()
 	// Default resolution.
 	if (!ResOkay)
 	{
-		SelectedWidth	= 640;
-		SelectedHeight	= 480;
-		SelectedDepth	= 16;
+		// ### 
+		SelectedWidth	= 1280;
+		SelectedHeight	= 1024;
+		SelectedDepth	= 32;
+	}
+
+	// ----
+	// WINDOWED
+	PCLoadFromRegistry(HKEY_CURRENT_USER, MOHO_REGISTRY_PATH, "Windowed", &DataType, &Value, &DataLength);
+	if ((DataType == REG_BINARY)
+		&& (Value)
+		&& (DataLength > 0)
+		)
+	{
+		Windowed = *Value == 1;
 	}
 
 	// LOAD RESOLUTION!!!

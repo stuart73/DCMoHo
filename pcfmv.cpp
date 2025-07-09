@@ -10,6 +10,8 @@
 #include	"rad.h"
 #include	"bink.h"
 
+bool	PlayFMV(char* VideoPath, StrInfo* stream, bool ForceMovie, LPDIRECTDRAWSURFACE7	refSurface, DDBLTFX* clearEffect);
+
 //*****************************************************************************
 #define STR_VOL	64
 
@@ -206,6 +208,9 @@ bool NeedToResetRes = false;
 // Setting _Mode to false returns to the default resolution.
 void	FMVResChange(bool _Mode)
 {
+	// ### Removing resolution changes in game
+	return;
+
 	SINT d;
 
 	if (_Mode)
@@ -243,7 +248,6 @@ SINT	PlayFMV(EMovie movie)
 	StrInfo	*stream				= NULL;
 	SINT	ret					= PLAYSTR_ERROR;
 	bool	ForceMovie			= false;
-	bool	ContinueWithMovie	= true;	
 
 	switch(movie)
 	{
@@ -343,21 +347,25 @@ SINT	PlayFMV(EMovie movie)
 			ForceMovie = false;
 			break;
 		}
-
-
-		HBINK bink;
-		HBINKBUFFER binkBuffer;
 		
 		BinkSoundUseDirectSound(SOUND.GetDirectSound());
 	
 		// Locate cd for video
 		DWORD	Drives;
-		FILE*	FH;
-		char	VideoPath[MAX_PATH];
+
+		char	VideoPath[MAX_PATH] = { 0 };
+
+		//LPSTR lpBuffer = (LPSTR) & VideoPath;
+		//GetCurrentDirectory(100, lpBuffer);
+
+		// ### can now try and load fmv's on local drive
+		sprintf(VideoPath, "%s", stream->strName);
+		bool foundOnInstallDrive = PlayFMV(VideoPath, stream, ForceMovie, refSurface, &clearEffect);
 		
+		// If not found check CD
 		// Check for MoHo CD - can be found in any [CD] drive.
 		Drives = GetLogicalDrives();
-		if (Drives)
+		if (Drives && foundOnInstallDrive == false)
 		{
 			for (int i = 0; i < 32; i++)
 			{
@@ -368,77 +376,12 @@ SINT	PlayFMV(EMovie movie)
 					{
 						strcat(VideoPath, stream->strName);
 						
-						// Check for a file on the disk.
-						FH = fopen(VideoPath, "r");
-						if (FH)
-						{
-							fclose(FH);
-							
-							// Open the Bink file
-							bink=BinkOpen(VideoPath, 0);
-							
-							if(bink)
-							{
-								PLATFORM.GetDPWin()->GetDirectDraw7()->GetGDISurface(&refSurface);
-								BinkBufferSetDirectDraw(PLATFORM.GetDPWin()->GetDirectDraw7(), refSurface);	// are: Already have a handle to the primary surface, from above.
-								
-								if(stream->width == 320)
-								{
-									binkBuffer = BinkBufferOpen(PLATFORM.GetDPWin()->GetHwnd(), stream->width,stream->height, BINKBUFFERSTRETCHYINT | BINKBUFFERSTRETCHXINT | BINKBUFFERAUTO);
-									
-									BinkBufferSetScale(binkBuffer, 640, 384);
-									
-									BinkBufferSetOffset(binkBuffer, 0, 48);
-								}
-								else
-									binkBuffer = BinkBufferOpen(PLATFORM.GetDPWin()->GetHwnd(), stream->width,stream->height, BINKBUFFERAUTO);
-								
-								ContinueWithMovie = true;
-								while (ContinueWithMovie)
-								{
-									PLATFORM.ProcessMessages();
-									if (	(CONTROLS.IsButtonPressed(BUTTON_PSX_X))
-										|| 	(CONTROLS.IsButtonPressed(BUTTON_FIRE_PRIMARY))
-										||	((PLATFORM.GetDPWin()->GetDInput()->GetKeyState()[DIK_SPACE]) & 0x80)
-										|| 	((PLATFORM.GetDPWin()->GetDInput()->GetKeyState()[DIK_RETURN]) & 0x80)
-										|| 	((PLATFORM.GetDPWin()->GetDInput()->GetKeyState()[DIK_ESCAPE]) & 0x80)
-										)
-									{
-										ContinueWithMovie = ForceMovie;
-									}
-									
-									if (!BinkWait(bink))
-									{
-										if(!NextBinkFrame(bink,binkBuffer))
-										{
-											ContinueWithMovie = false;
-										}
-									}
-								}
-								
-								refSurface->Blt(NULL, 
-									NULL, 
-									NULL, 
-									DDBLT_WAIT | DDBLT_COLORFILL, 
-									&clearEffect);
-								
-								BinkBufferClose(binkBuffer);
-								
-								if (bink)
-									BinkClose(bink);
-
-								// Wait for a while. So that the keys will clear.
-								Sleep(200);
-							}
-							
-							break;
-						}
+						PlayFMV(VideoPath, stream, ForceMovie, refSurface, &clearEffect);
+						break;
 					}
 				}
 			}
 		}
-
-		
 
 	//	TTWindow* refTTWindow = PLATFORM.GetDPWin();
 	//	if (refTTWindow)
@@ -446,6 +389,7 @@ SINT	PlayFMV(EMovie movie)
 	//		OutputDebugString("Restoring D3D and buffers.\n");
 	//		refTTWindow->RestoreD3D();
 	//	}
+
 	}
 
 	// Un assign key callback.
@@ -453,6 +397,87 @@ SINT	PlayFMV(EMovie movie)
 
 	return PLAYSTR_END;
 }
+
+//*****************************************************************************
+bool	PlayFMV(char* VideoPath, StrInfo* stream, bool ForceMovie, LPDIRECTDRAWSURFACE7	refSurface, DDBLTFX*clearEffect)
+{
+	FILE* FH;
+	HBINK bink;
+	HBINKBUFFER binkBuffer;
+	bool	ContinueWithMovie = true;
+
+	// Check for a file on the disk.
+	FH = fopen(VideoPath, "r");
+	if (FH)
+	{
+		fclose(FH);
+
+		// Open the Bink file
+		bink = BinkOpen(VideoPath, 0);
+
+		if (bink)
+		{
+			PLATFORM.GetDPWin()->GetDirectDraw7()->GetGDISurface(&refSurface);
+			BinkBufferSetDirectDraw(PLATFORM.GetDPWin()->GetDirectDraw7(), refSurface);	// are: Already have a handle to the primary surface, from above.
+
+			if (stream->width == 320)
+			{
+				binkBuffer = BinkBufferOpen(PLATFORM.GetDPWin()->GetHwnd(), stream->width, stream->height, BINKBUFFERSTRETCHYINT | BINKBUFFERSTRETCHXINT | BINKBUFFERAUTO);
+
+				BinkBufferSetScale(binkBuffer, 640, 384);
+
+				BinkBufferSetOffset(binkBuffer, 0, 48);
+			}
+			else
+				binkBuffer = BinkBufferOpen(PLATFORM.GetDPWin()->GetHwnd(), stream->width, stream->height, BINKBUFFERAUTO);
+
+			ContinueWithMovie = true;
+			while (ContinueWithMovie)
+			{
+				PLATFORM.ProcessMessages();
+				if ((CONTROLS.IsButtonPressed(BUTTON_PSX_X))
+					|| (CONTROLS.IsButtonPressed(BUTTON_FIRE_PRIMARY))
+					|| ((PLATFORM.GetDPWin()->GetDInput()->GetKeyState()[DIK_SPACE]) & 0x80)
+					|| ((PLATFORM.GetDPWin()->GetDInput()->GetKeyState()[DIK_RETURN]) & 0x80)
+					|| ((PLATFORM.GetDPWin()->GetDInput()->GetKeyState()[DIK_ESCAPE]) & 0x80)
+					)
+				{
+					ContinueWithMovie = ForceMovie;
+				}
+
+				if (!BinkWait(bink))
+				{
+					if (!NextBinkFrame(bink, binkBuffer))
+					{
+						ContinueWithMovie = false;
+					}
+				}
+			}
+
+			refSurface->Blt(NULL,
+				NULL,
+				NULL,
+				DDBLT_WAIT | DDBLT_COLORFILL,
+				clearEffect);
+
+			BinkBufferClose(binkBuffer);
+
+			if (bink)
+				BinkClose(bink);
+
+			// Wait for a while. So that the keys will clear.
+			Sleep(200);
+		}
+	}
+	else
+	{
+		return false;
+	}
+	return true;
+}
+
+
+
 //*****************************************************************************
 #endif
 

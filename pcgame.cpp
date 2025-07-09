@@ -666,16 +666,17 @@ SINT	CPCGame::Run()
 		if (l == -999)
 			break; // user wants to quit.....
 		
-#ifndef _DEBUG
+//#ifndef _DEBUG
 		// Don't go through the process of changing resolution if there is no need. 
 		if (	(SelectedWidth	!= 640)	
 			||	(SelectedHeight	!= 480) 
-			||	(SelectedDepth	!=  16)
+			||	(SelectedDepth	!=  32)
 			)
 		{
-			PLATFORM.GetDPWin()->DeclareResolutionChange(SelectedWidth, SelectedHeight, SelectedDepth);
+			// ###  remove resolution change
+		//	PLATFORM.GetDPWin()->DeclareResolutionChange(SelectedWidth, SelectedHeight, 32);
 		}
-#endif
+//#endif
 		
 		// JCL - no attract in PC
 /*		if (l < 0)
@@ -811,15 +812,16 @@ SINT	CPCGame::Run()
 		}
 
 #endif
-#ifndef _DEBUG
+//#ifndef _DEBUG
 		if (	(SelectedWidth	!= 640)	
 			||	(SelectedHeight	!= 480) 
 			||	(SelectedDepth	!=  16)
 			)
 		{
-			PLATFORM.GetDPWin()->DeclareResolutionChange(640, 480, 16);
+			// ### remove resolution change
+		//	PLATFORM.GetDPWin()->DeclareResolutionChange(640, 480, 32);
 		}
-#endif
+//#endif
 		ENGINE.DisableFogEffect();
 	}
 

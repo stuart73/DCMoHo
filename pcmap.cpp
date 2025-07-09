@@ -116,8 +116,12 @@ BOOL	CPCMap::Resize(SINT xs, SINT ys)
 		// Cells
 		SINT size_x = MAP_WIDTH / (1 << c0);
 		SINT size_y = MAP_HEIGHT / (1 << c0);
-		mMapWhos[c0 - MAP_LAYER_MIN]=new (CThing (*([size_x * size_y])));
-		ASSERT(mMapWhos[c0-MAP_LAYER_MIN]);
+		/// ### compiler issues
+		SINT size = size_x * size_y;
+		CThing** nt = new CThing * [size];
+		mMapWhos[c0 - MAP_LAYER_MIN] = nt;
+	//	mMapWhos[c0 - MAP_LAYER_MIN]=new (CThing (*([(size_x * size_y)])));  // SRG compiler goes nuts
+		ASSERT(mMapWhos[c0 - MAP_LAYER_MIN]);
 	}
 
 	MAP.InitPlatform();
@@ -2310,7 +2314,7 @@ UWORD pmesh2[] = {	PC_2W(0), PC_2W(1),
 //======================================================-==--=-- --  -
 int	myrandom()
 {
-	static seed = 4997;
+	static int seed = 4997;
 	return (seed = (seed*4997)+1223);
 }
 
@@ -3052,7 +3056,7 @@ void	CPCMap::PCRender4x4(SINT x, SINT y, SINT mode)
 
 	ENGINE.DisableAlpha();
 
-	for (i=0; i<NUM_CELL_TYPES; i++)
+	for (int i=0; i<NUM_CELL_TYPES; i++)
 	{
 		CTextureGTEX* ty =	mTypeTextures[i];
 		if(ty) ty->DrawAll();
@@ -3173,7 +3177,7 @@ void	CPCMap::PCRender2x2(SINT x, SINT y)
 	}
 	ENGINE.DisableAlpha();
 
-	for (i=0; i<NUM_CELL_TYPES; i++)
+	for (int i=0; i<NUM_CELL_TYPES; i++)
 	{
 		CTextureGTEX* ty =	mTypeTextures[i];
 		if(ty) ty->DrawAll();
@@ -3294,7 +3298,7 @@ void	CPCMap::PCRender1x1(SINT x, SINT y)
 	}
 	ENGINE.DisableAlpha();
 
-	for (i=0; i<NUM_CELL_TYPES; i++)
+	for (int i=0; i<NUM_CELL_TYPES; i++)
 	{
 		CTextureGTEX* ty =	mTypeTextures[i];
 		if(ty) ty->DrawAll();

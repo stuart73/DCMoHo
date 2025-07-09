@@ -121,6 +121,68 @@ void	CControls::Process()
 #endif
 
 
+	// next primary
+	if (IsButtonPressed(BUTTON_NEXT_PRIMARY))
+		WORLD.NextPrimary();
+
+	//******************************
+	// Change level
+
+#if TARGET == PC
+	SINT	new_level = GAME.GetCurrentLevelNumber();
+
+	if (IsButtonPressedDB(BUTTON_ADVANCE_LEVEL))
+	{
+		if (IsButtonPressed(BUTTON_SHIFT))
+			new_level += 10;
+		else
+			new_level++;
+	}
+
+	if (IsButtonPressedDB(BUTTON_RETREAT_LEVEL))
+	{
+		if (IsButtonPressed(BUTTON_SHIFT))
+			new_level -= 10;
+		else
+			new_level--;
+	}
+
+	if (new_level != GAME.GetCurrentLevelNumber())
+	{
+		if (new_level > 99)
+			new_level -= 1000;
+		if (new_level < 0)
+			new_level += 1000;
+
+		BOOL res = GAME.LoadLevel(new_level);
+		if (!(res))
+		{
+			char text[200];
+			sprintf(text, "Level %03d failed to load.", new_level);
+			CONSOLE.AddString(text);
+		}
+	}
+#endif
+
+	//******************************
+	// Teleport ball
+	if (IsButtonPressed(BUTTON_TELEPORT))
+	{
+		CPrimary* t = WORLD.GetPrimaryThing();
+
+		if (t)
+		{
+			SINT x = PLAYER(0)->GetCursor().X;
+			SINT y = PLAYER(0)->GetCursor().Y;
+
+			if (x != -1)
+			{
+				t->Move(GVector(G(x), G(y), MAP.GetMapHeight(GVector(G(x), G(y), G0))));
+			}
+		}
+	}
+
+
 #ifdef LINK_EDITOR
 	if (EDITOR.IsActive())
 		return; // nothing to do here...
@@ -285,9 +347,7 @@ void	CControls::Process()
 				GAME.ToggleGamePanel(1);
 	}
 
-	// next primary
-	if (IsButtonPressed(BUTTON_NEXT_PRIMARY))
-		WORLD.NextPrimary();
+	
 
 	//******************************
 	// debug things
@@ -295,62 +355,8 @@ void	CControls::Process()
 	if (IsButtonPressedDB(BUTTON_EDITOR))
 		GAME.ToggleEditor();
 
-	//******************************
-	// Change level
 
-#if TARGET == PC
-	SINT	new_level = GAME.GetCurrentLevelNumber();
-
-	if (IsButtonPressedDB(BUTTON_ADVANCE_LEVEL))
-	{
-		if (IsButtonPressed(BUTTON_SHIFT))
-			new_level += 10;
-		else
-			new_level ++;
-	}
-
-	if (IsButtonPressedDB(BUTTON_RETREAT_LEVEL))
-	{
-		if (IsButtonPressed(BUTTON_SHIFT))
-			new_level -= 10;
-		else
-			new_level --;
-	}
-
-	if (new_level != GAME.GetCurrentLevelNumber())
-	{
-		if (new_level > 99)
-			new_level -= 1000;
-		if (new_level < 0 )
-			new_level += 1000;
-
-		BOOL res = GAME.LoadLevel(new_level);
-		if (!(res))
-		{
-			char text[200];
-			sprintf(text, "Level %03d failed to load.", new_level);
-			CONSOLE.AddString(text);
-		}
-	}
-#endif
-
-	//******************************
-	// Teleport ball
-	if (IsButtonPressed(BUTTON_TELEPORT))
-	{
-		CPrimary *t = WORLD.GetPrimaryThing();
-
-		if (t)
-		{
-			SINT x = PLAYER(0)->GetCursor().X;
-			SINT y = PLAYER(0)->GetCursor().Y;
-
-			if (x != -1)
-			{
-				t->Move(GVector(G(x), G(y), MAP.GetMapHeight(GVector(G(x), G(y), G0))));
-			}
-		}
-	}
+	
 
 }
 

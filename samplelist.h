@@ -67,6 +67,8 @@
 #define SOUND_CHEAT			61
 #define SOUND_START			62
 
+// current loaded music
+#define SOUND_MUSIC			63
 
 BOOL	IsSampleLooping(SINT n);
 

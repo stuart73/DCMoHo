@@ -56,7 +56,8 @@ CVolumeOutMaster::CVolumeOutMaster()
 		m_pfUserSink(NULL),
 		m_dwUserValue(0L)
 {
-	if ( m_bOK = Init() )
+	//### FIX
+	if ( m_bOK == Init() )
 	{
 		g_pThis = this;
 		if ( !Initialize() )
@@ -254,7 +255,7 @@ void CVolumeOutMaster::EnableLine( bool bEnable )
 	mmResult = mixerGetLineControls( (HMIXEROBJ)m_dwMixerHandle, &LineControls, MIXER_GETLINECONTROLSF_ALL );
 	if ( mmResult == MMSYSERR_NOERROR )
 	{
-		for ( i = 0; i < nControlCount; i++ )
+		for (int i = 0; i < nControlCount; i++ )
 		{
 			LONG lValue;
 			bool bReadyToSet = false;

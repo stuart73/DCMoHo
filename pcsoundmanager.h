@@ -30,6 +30,7 @@ typedef struct
 			GINT	mFade;				// The Fade of the sound
 			GINT	mFadeDest;			// .
 			GINT	mTime; 				// bugfix...
+			BOOL	mMusic;				// is actually playing music (non CD)
 }SSoundEvent;
 
 
@@ -81,7 +82,7 @@ public:
 			memset((void*)&mSoundEvent[i], 0, sizeof(mSoundEvent[i]));
 		}
 
-		for (i = 0; i < 64; i ++)
+		for (int i = 0; i < 64; i ++)
 		{
 			WavPointers[i].pbWavData		= NULL;
 			WavPointers[i].cbWavSize		= NULL;
@@ -93,8 +94,10 @@ public:
 	void AllocSampleBank(char *name); //Setup the sound sample bank
 	void Reset(); //so something entirely different?
 
+	//play music from local install folder
+	SINT PlayMusicFromInstallFolder(char* strFileName, GINT volume = DEFAULT_SOUND_VOLUME);
 	//function called to play a sample
-	SINT PlaySample(const short id, GINT volume = DEFAULT_SOUND_VOLUME, BOOL once = FALSE, GINT fade = G0); 
+	SINT PlaySample(const short id, GINT volume = DEFAULT_SOUND_VOLUME, BOOL once = FALSE, GINT fade = G0, BOOL music = FALSE); 
 	//called to play a diffdernt type of sample
 	SINT PlaySample(const short id, CThing *thing, GINT volume = DEFAULT_SOUND_VOLUME, BOOL track = FALSE, BOOL once = FALSE, GINT fade = G0);
 	//two things happening at once?
@@ -163,15 +166,16 @@ public:
 
 protected:
 
-
 	SINT Fade(SINT v, SINT n);
-
 	struct filePointer{
 	BYTE*   pbWavData; // Pointer to actual wav data 
     UINT    cbWavSize; // Size of data
 	};
 
-	filePointer			WavPointers[64];
+	BOOL LoadSoundWav(char* name, filePointer* loadInto);
+
+
+	filePointer			WavPointers[64];	// index 63 = currently loaded music (when not using CD to playback)
 	LPDIRECTSOUND       g_pDS;
 	LPDIRECTSOUNDBUFFER g_pDSBuffer;
 	LPDIRECTSOUNDBUFFER	DSBuffer[32];

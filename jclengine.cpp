@@ -318,9 +318,10 @@ BOOL	CJCLEngine::LoadLevelTextures()
 	mTexBarRight		= CTextureTL::GetTexture("frontend\\1butbitr.tga");
 
 	// Panel Stuff
-	mTexPanelBar		= CTextureTL::GetTexture("panel\\colourbar.tga");
-	mTexPanelBar2		= CTextureTL::GetTexture("panel\\colourbar2.tga");
-	mTexPanelBackground	= CTextureTLAdditive::GetTexture("panel\\outlinebox.tga");
+// ### these are missing and were originally causing crashing in release builds
+//	mTexPanelBar		= CTextureTL::GetTexture("panel\\colourbar.tga");
+//	mTexPanelBar2		= CTextureTL::GetTexture("panel\\colourbar2.tga");
+//	mTexPanelBackground	= CTextureTLAdditive::GetTexture("panel\\outlinebox.tga");
 
 	mTexStart1			= CTextureTL::GetTexture("startl1.tga");
 	mTexStart2			= CTextureTL::GetTexture("startl2.tga");

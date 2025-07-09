@@ -41,6 +41,7 @@ extern bool					PlayerOneAssignedJoystick;
 extern bool					PlayerTwoAssignedJoystick;
 extern SINT					PCSetupQueryLanguage;
 extern bool					OkayToUseStdNavKeys;
+extern bool					Windowed;
 
 HWND getStartOptionByIndex(int _Index, HWND _Window);
 HWND getMapJoystickComboByIndex(int _Index, HWND _Window);

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ballz", "ballz.vcxproj", "{B8ED3B37-AA53-4D12-AB24-56CADBC8F241}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		BC Debug|Win32 = BC Debug|Win32
+		Debug|Win32 = Debug|Win32
+		Inlined Debug|Win32 = Inlined Debug|Win32
+		Optimised Debug|Win32 = Optimised Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B8ED3B37-AA53-4D12-AB24-56CADBC8F241}.BC Debug|Win32.ActiveCfg = BC Debug|Win32
+		{B8ED3B37-AA53-4D12-AB24-56CADBC8F241}.BC Debug|Win32.Build.0 = BC Debug|Win32
+		{B8ED3B37-AA53-4D12-AB24-56CADBC8F241}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B8ED3B37-AA53-4D12-AB24-56CADBC8F241}.Debug|Win32.Build.0 = Debug|Win32
+		{B8ED3B37-AA53-4D12-AB24-56CADBC8F241}.Inlined Debug|Win32.ActiveCfg = Inlined Debug|Win32
+		{B8ED3B37-AA53-4D12-AB24-56CADBC8F241}.Inlined Debug|Win32.Build.0 = Inlined Debug|Win32
+		{B8ED3B37-AA53-4D12-AB24-56CADBC8F241}.Optimised Debug|Win32.ActiveCfg = Optimised Debug|Win32
+		{B8ED3B37-AA53-4D12-AB24-56CADBC8F241}.Optimised Debug|Win32.Build.0 = Optimised Debug|Win32
+		{B8ED3B37-AA53-4D12-AB24-56CADBC8F241}.Release|Win32.ActiveCfg = Release|Win32
+		{B8ED3B37-AA53-4D12-AB24-56CADBC8F241}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

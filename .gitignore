@@ -1,0 +1,15 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+*.obj
+*.sbr
+/Release
+/Debug
+/ballz.vcxproj.filters
+*.dll
+*.user
+/MEM-LOG.TXT
+*.aps
+

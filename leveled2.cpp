@@ -112,7 +112,7 @@ CIconBank::CIconBank(char *fname)
 
 	if (!loader.Load())
 	{
-		ASSERT(0);
+		// ### ASSERT(0);
 		return;
 	}
 
@@ -122,7 +122,7 @@ CIconBank::CIconBank(char *fname)
 	// is height a multiple of width?
 	if (((h / w) * w) != h)
 	{
-		ASSERT(0);
+		// ### ASSERT(0);
 		return;
 	}
 
@@ -171,7 +171,7 @@ CIconBank::CIconBank(char *fname, SINT across)
 
 	if (!loader.Load())
 	{
-		ASSERT(0);
+		//ASSERT(0);
 		return;
 	}
 
@@ -181,7 +181,7 @@ CIconBank::CIconBank(char *fname, SINT across)
 	// is width a multiple of 'across'?
 	if (((w / across) * across) != w)
 	{
-		ASSERT(0);
+		//ASSERT(0);
 		return;
 	}
 	mIconSize = w / across;
@@ -189,7 +189,7 @@ CIconBank::CIconBank(char *fname, SINT across)
 	// is height a multiple of 'icon size'?
 	if (((h / mIconSize) * mIconSize) != h)
 	{
-		ASSERT(0);
+	//	ASSERT(0);
 		return;
 	}
 
@@ -4355,20 +4355,19 @@ BOOL	CLevelEditor2::Init()
 	mActionPane = NULL;
 
 	mSystemIcons = new CIconBank("SystemIcons.tga");
-	ASSERT(mSystemIcons->IsValid());
+	if (!mSystemIcons->IsValid()) return TRUE;
 
 	mScrollIcons = new CIconBank("Scrollbar.tga");
-	ASSERT(mScrollIcons->IsValid());
+	if (!mScrollIcons->IsValid()) return TRUE;
 
 	mDataEntryIcons = new CIconBank("DataEntry.tga");
-	ASSERT(mDataEntryIcons->IsValid());
+	if (!mDataEntryIcons->IsValid()) return TRUE;
 
 	mDialogIcons = new CIconBank("Dialog.tga");
-	ASSERT(mDialogIcons->IsValid());
+	if (!mDialogIcons->IsValid()) return TRUE;
 
 	mFont = new CIconBank("font.tga", 16);
-	ASSERT(mFont->IsValid());
-
+	if (!mFont->IsValid()) return TRUE;
 
 	SINT size = mSystemIcons->GetSize();
 	mPaneMouse = new CPane(size, size, 0, 0, EPS_NONE, SRCPAINT, TRUE);

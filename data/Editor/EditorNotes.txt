@@ -1,0 +1,88 @@
+MOHO Editor/Debug buttons  (CURRENTLY ONLY WORKS WHEN IN THE EDITOR)
+
+BUTTON_FIRE_PRIMARY			= LEFT_MOUSE, SPACE		
+BUTTON_FIRE_SECONDARY		= RIGHT_MOUSE, NUMPAD0	
+BUTTON_ZOOM_IN				= END	
+BUTTON_ZOOM_OUT				= HOME			
+BUTTON_FOLLOW_TOGGLE		= RETURN		
+BUTTON_WIDE_VIEW			= F7		
+BUTTON_TIGHT_VIEW			= F8 			
+BUTTON_CHANGE_WEAPON		= BACK	(not used)	
+BUTTON_PAUSE				= P	(not used)			
+BUTTON_FLIPPER_RIGHT		= B	(not used)		
+BUTTON_FLIPPER_LEFT			= V	(not used)	
+BUTTON_CHANGE_CONTROL_MODE	= T	
+BUTTON_SPIN_CLOCKWISE		= DELETE		
+BUTTON_SPIN_ANTICLOCKWISE	= PAGE DOWN
+BUTTON_SPIN_CENTRE			= INSERT			
+BUTTON_NEXT_PRIMARY			= I			
+BUTTON_BRAKE				= L	(not used)		
+BUTTON_GAME_PANEL			= ESCAPE (in game)	
+BUTTON_HELP					= H (not used ?)					
+BUTTON_TRICK				= K	(not used)			
+BUTTON_BLOCK				= S	(not used)		
+BUTTON_THROW	
+
+BUTTON_CHEAT_START				
+BUTTON_CHEAT_1					
+BUTTON_CHEAT_2					
+BUTTON_CHEAT_3					
+BUTTON_CHEAT_4					
+BUTTON_CHEAT_5					
+BUTTON_CHEAT_6					
+BUTTON_CHEAT_7					
+BUTTON_PSX_TRIANGLE			= ESCAPE			
+BUTTON_PSX_X					
+BUTTON_TOGGLE_MAPDRAW		= J		
+BUTTON_CHANGE_GAMUT			= F	(not used)		
+BUTTON_SUSPEND				= F12	(not used)			
+BUTTON_PROFILE_NEXT			= F3				
+BUTTON_PROFILE_PREV			= F2				
+BUTTON_TOGGLE_PROFILER		= F1		
+BUTTON_TOGGLE_DEBUG_TEXT	= F4		
+BUTTON_EDITOR				= F6		
+BUTTON_TOGGLE_MAPWHO_INFO	= M		
+BUTTON_TOGGLE_COLLISION_INFO= O (letter)	
+BUTTON_TOGGLE_2D			= D			
+BUTTON_TELEPORT				= G				
+BUTTON_SHIFT				= CONTROL				
+BUTTON_RETREAT_LEVEL		= 9	(after changing to desired level, push F6 twice to make mouse work.  Level 10 seems mostly empty)
+BUTTON_ADVANCE_LEVEL		= 0 (number)		
+BUTTON_TOGGLE_WATER				
+BUTTON_RELIGHT_LEVEL		= N		
+BUTTON_UNLIGHT_LEVEL		= A		
+BUTTON_TOGGLE_CHARACTER_INFO= C
+BUTTON_SCREENSHOT				
+BUTTON_UPLOAD_TEXTURE		= U, <	(not used)
+BUTTON_NEXT_FRAME			= Y	  (not used)
+BUTTON_QUIT						
+
+BUTTON_ANALOGUE_UP			= UP			
+BUTTON_ANALOGUE_DOWN		= DOWN			
+BUTTON_ANALOGUE_LEFT		= LEFT			
+BUTTON_ANALOGUE_RIGHT		= RIGHT	
+
+
+Landscape editor
+================
+left mouse = raise
+right mouse = lower
+
+
+Tile editor
+===========
+
+
+Trigger editor
+==============
+
+
+Thing placement editor
+======================
+Left mouse = place object currently selected in scroll box
+right mouse = select object (properties panel appears on right)
+backspace (when object selected) = delete object
+
+
+
+				

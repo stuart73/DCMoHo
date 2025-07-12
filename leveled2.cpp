@@ -4251,7 +4251,7 @@ void	CPaneDisk::ProcessAction(EEdAction action)
 			{
 				// save!
 				BOOL	res = GAME.SaveLevel();
-				res = GAME.SavePSXLevel();
+				// ### res = GAME.SavePSXLevel();
 				//! do something with res..
 				EDITOR.RegisterLevelUnchanged();
 				EDITOR.ResetUndo();

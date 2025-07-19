@@ -254,6 +254,20 @@ BOOL	WINAPI		CQueryPlatform::DInputEnumCallback(LPCDIDEVICEINSTANCE pInst, LPVOI
 		OutputDebugString(pInst->tszProductName);
 		OutputDebugString("\n");
 
+
+		// If not a mouse,keyboard or joystick, then bail out early
+		switch (GET_DIDEVICE_TYPE(pInst->dwDevType))
+		{
+		case DIDEVTYPE_MOUSE:
+		case DIDEVTYPE_KEYBOARD:
+		case DIDEVTYPE_JOYSTICK:
+			break;
+		default:
+			OutputDebugString("WARNING: Unknown device type - ignoring\n");
+			return DIENUM_CONTINUE;
+			break;
+		}
+
 		// Attempt to create device
 		if (FAILED(DInputObject->CreateDevice(pInst->guidInstance, &pDevice, NULL))) 
 		{
@@ -324,8 +338,12 @@ BOOL	WINAPI		CQueryPlatform::DInputEnumCallback(LPCDIDEVICEINSTANCE pInst, LPVOI
 			break;
 		
 		default:
+			// should be no longer possible to get her.
 			OutputDebugString("WARNING: Unknown device type - ignoring [won't show up in list of enumerated devices].\n");
+			InputDeviceArray[NumberOfEnumeratedInputDevices].Device->Release();
+			InputDeviceArray[NumberOfEnumeratedInputDevices].Device = NULL;
 			return DIENUM_CONTINUE;
+
 			break;
 		}
 		

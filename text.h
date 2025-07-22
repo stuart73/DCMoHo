@@ -37,6 +37,7 @@ public:
 
 	static	void	Load(SINT language);
 	static	void	GetString(SINT number, char *buffer);
+	static  void    OutputAllStrings();
 
 protected:
 	static	UBYTE	mData[TEXT_BUFFER_SIZE];

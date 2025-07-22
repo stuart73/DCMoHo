@@ -99,6 +99,20 @@ void	CText::Load(SINT language)
 }
 
 //****************************************************************
+// For debug purposes
+void	CText::OutputAllStrings()
+{
+	for (int i = 0; i < mNumStrings; i++)
+	{
+		char temp[256] = { 0 };
+		CText::GetString(i, (char*)temp);
+		char temp2[256] = { 0 };
+		sprintf(temp2, "%d = %s\n", i, temp);
+		OutputDebugString(temp2);
+	}
+}
+
+//****************************************************************
 void	CText::GetString(SINT number, char *buffer)
 {
 	SINT	*index = (SINT *)(mData + 4); // first is num strings

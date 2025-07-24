@@ -1386,15 +1386,15 @@ LRESULT CALLBACK ControllerDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM l
 				{
 					InputDeviceRef = mySystem->GetInputDevice(j);
 					
+					byte deviceType = GET_DIDEVICE_TYPE(InputDeviceRef->Info.dwDevType);
 					// Don't show mice or mouse like devices.
-					if (GET_DIDEVICE_TYPE(InputDeviceRef->Info.dwDevType) == DIDEVTYPE_MOUSE)
+					if (deviceType == DIDEVTYPE_MOUSE)
 					{
 						continue;
 					}
 									
-					if (	(InputDeviceRef->Caps.dwButtons	< 5) 
-						||	(InputDeviceRef->Caps.dwAxes	< 2) 
-						)
+					if (deviceType != DIDEVTYPE_KEYBOARD && 
+						(InputDeviceRef->Caps.dwButtons	< 5 || InputDeviceRef->Caps.dwAxes	< 2))
 					{
 						// Not a suitable joystick.
 						continue;

@@ -44,20 +44,20 @@ Optional for FMV and music to run without a CD:-
 ========================================
 -Copy the contents of 'data/video' from the CD into the installed Moho folder.
 
--Music is a bit trickier and requires you first ripping the CD like a normal music CD.  This can be done with the default 'Windows media player' 'rip music' feature. IMPORTANT: set the output format as '.WAV Lossless'.  You can then copy the output wav files to 'data/Music' on your installed Moho location.
+-Music is a bit trickier and requires you first ripping the CD like a normal music CD.  This can be done with the default 'Windows media player' 'rip music' feature. IMPORTANT: set the output format as '.WAV Lossless'.  You can then copy the output wav files to 'data/Music' on your installed Moho location. The track names may be wrong when ripping and need to be renamed to simply Track01 to Track05.
 
 i.e. it should look like this:
 Moho\Data\Music
 
-    01 Sticks And Stones.wav
+    Track01.wav
     
-    02 Suffocate.wav
+    Track02.wav
     
-    03 Visual Poetry.wav
+    Track03.wav
     
-    04 Otherside.wav
+    Track04.wav
     
-    05 Borrowed Time.wav
+    Track05.wav
     
 
 -If you wish to use the level editor, make sure you copy the files in the data\Editor data from this repository to your installed Moho location.

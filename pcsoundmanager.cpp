@@ -1239,23 +1239,23 @@ void CPCSoundManager::PlayCDTrack( int track )
 
 		if (track == 2)
 		{
-			strcat(musicstring, "01 Sticks And Stones.wav");
+			strcat(musicstring, "Track01.wav");
 		}
 		else if (track == 3)
 		{
-			strcat(musicstring, "02 Suffocate.wav");
+			strcat(musicstring, "Track02.wav");
 		}
 		else if (track == 4)
 		{
-			strcat(musicstring, "03 Visual Poetry.wav");
+			strcat(musicstring, "Track03.wav");
 		}
 		else if (track == 5)
 		{
-			strcat(musicstring, "04 Otherside.wav");
+			strcat(musicstring, "Track04.wav");
 		}
 		else
 		{
-			strcat(musicstring, "05 Borrowed Time.wav");
+			strcat(musicstring, "Track05.wav");
 		}
 
 		SOUND.PlayMusicFromInstallFolder(musicstring, GINT_HALF);

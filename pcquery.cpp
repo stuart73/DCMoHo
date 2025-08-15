@@ -350,6 +350,9 @@ BOOL	WINAPI		CQueryPlatform::DInputEnumCallback(LPCDIDEVICEINSTANCE pInst, LPVOI
 		NumberOfEnumeratedInputDevices++;
 		return DIENUM_CONTINUE;
 	}
+
+	OutputDebugString("Finished enum callback\n");
+
 	return DIENUM_STOP;
 }
 
@@ -369,12 +372,27 @@ bool				CQueryPlatform::CreateAllDirectInput(HWND _HWnd)
 	if (SUCCEEDED(DirectInputCreateEx(HInstance, DIRECTINPUT_VERSION, IID_IDirectInput7, (void**)&DInputObject, NULL)))
 	{
 		// Enumerate and create devices.
-		DInputObject->EnumDevices(	0,					// All device types.
+		DInputObject->EnumDevices( DIDEVTYPE_KEYBOARD,
 									DInputEnumCallback,
 									_HWnd, 
 									DIEDFL_ATTACHEDONLY);
+
+		DInputObject->EnumDevices(DIDEVTYPE_MOUSE,
+									DInputEnumCallback,
+									_HWnd,
+									DIEDFL_ATTACHEDONLY);
+
+		DInputObject->EnumDevices(DIDEVTYPE_JOYSTICK,
+									DInputEnumCallback,
+									_HWnd,
+									DIEDFL_ATTACHEDONLY);
+		
+		OutputDebugString("Finished enumerating devices\n");
+
 		return true;
 	}
+	OutputDebugString("Failed to create input device\n");
+	
 	return false;
 }
 

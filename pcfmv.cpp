@@ -191,7 +191,7 @@ static bool NextBinkFrame(HBINK bink, HBINKBUFFER binkBuffer)
 		// unlock the surface
 		BinkBufferUnlock(binkBuffer);
 	}
-	
+
 	BinkBufferBlit(binkBuffer, bink->FrameRects, BinkGetRects(bink, binkBuffer->SurfaceType));
 	// advance or close the window
 	if (bink->FrameNum==bink->Frames) // goto the next if not on the last
@@ -239,6 +239,30 @@ void	FMVResChange(bool _Mode)
 				}
 			}
 		}
+	}
+}
+
+//*****************************************************************************
+void	ClearSurface(LPDIRECTDRAWSURFACE7 refSurface)
+{
+	DDSURFACEDESC2	desc;
+	ZeroMemory(&desc, sizeof(desc));
+	desc.dwSize = sizeof(desc);
+	if (refSurface->Lock(NULL, &desc, DDLOCK_WAIT, NULL) == DD_OK)
+	{
+		LPDWORD pDest = (LPDWORD)desc.lpSurface;
+		SINT sH = SINT(desc.dwHeight);
+		SINT sW = SINT(desc.dwWidth);
+		SINT lP = (desc.lPitch / 4);
+
+		for (SINT y = 0; y < sH; y++, pDest += lP)
+		{
+			for (SINT x = 0; x < sW; x++)
+			{
+				pDest[x] = 0x00000000;
+			}
+		}
+		refSurface->Unlock(NULL);
 	}
 }
 
@@ -310,12 +334,7 @@ SINT	PlayFMV(EMovie movie)
 				}
 			}
 
-			// Surface is valid, clear to black.
-			refSurface->Blt(NULL, 
-							NULL, 
-							NULL, 
-							DDBLT_WAIT | DDBLT_COLORFILL, 
-							&clearEffect);
+			ClearSurface(refSurface);					
 		}
 		else
 		{
@@ -417,19 +436,21 @@ bool	PlayFMV(char* VideoPath, StrInfo* stream, bool ForceMovie, LPDIRECTDRAWSURF
 
 		if (bink)
 		{
-			PLATFORM.GetDPWin()->GetDirectDraw7()->GetGDISurface(&refSurface);
 			BinkBufferSetDirectDraw(PLATFORM.GetDPWin()->GetDirectDraw7(), refSurface);	// are: Already have a handle to the primary surface, from above.
+			float videoAspect = ((float)stream->width) / ((float)stream->height);
 
-			if (stream->width == 320)
-			{
-				binkBuffer = BinkBufferOpen(PLATFORM.GetDPWin()->GetHwnd(), stream->width, stream->height, BINKBUFFERSTRETCHYINT | BINKBUFFERSTRETCHXINT | BINKBUFFERAUTO);
+			binkBuffer = BinkBufferOpen(PLATFORM.GetDPWin()->GetHwnd(), stream->width, stream->height, BINKBUFFERSTRETCHYINT | BINKBUFFERSTRETCHXINT | BINKBUFFERAUTO);
+		
+			SINT width = PLATFORM.ScreenWidth();
+			SINT height = (SINT)(((float)PLATFORM.ScreenWidth()) / videoAspect);
+			SINT yOffset = (PLATFORM.ScreenHeight() - height) / 2;
 
-				BinkBufferSetScale(binkBuffer, 640, 384);
+			BinkBufferSetScale(binkBuffer, width, height);
 
-				BinkBufferSetOffset(binkBuffer, 0, 48);
-			}
-			else
-				binkBuffer = BinkBufferOpen(PLATFORM.GetDPWin()->GetHwnd(), stream->width, stream->height, BINKBUFFERAUTO);
+			BinkBufferSetOffset(binkBuffer, 0, yOffset);
+
+
+
 
 			ContinueWithMovie = true;
 			while (ContinueWithMovie)
@@ -453,12 +474,8 @@ bool	PlayFMV(char* VideoPath, StrInfo* stream, bool ForceMovie, LPDIRECTDRAWSURF
 					}
 				}
 			}
-
-			refSurface->Blt(NULL,
-				NULL,
-				NULL,
-				DDBLT_WAIT | DDBLT_COLORFILL,
-				clearEffect);
+	
+			ClearSurface(refSurface);
 
 			BinkBufferClose(binkBuffer);
 

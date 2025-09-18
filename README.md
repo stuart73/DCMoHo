@@ -72,8 +72,4 @@ To access the level editor, select 'F6' when in game on any level.  I will leave
 
 Known issues
 ===========
--FMV and the front end run at 640x480 no matter what resolution you select.   However in game works ok.
-
--Seems to say 'Exit game' rather than 'Moho' in the start screen.
-
 -Not sure the correct music is played when playing music from the installation folder rather than the CD.
